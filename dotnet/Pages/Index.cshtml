@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Language detector</title>
+</head>
+<body>
+    <h3>Language detector</h3>
+
+    <form action="" method="post">
+        <input type="text" name="text" value="中文" />
+        <button type="submit">Detect</button>
+    </form>
+
+    @if (Model._detectedLanguage.HasValue)
+    {
+        <div>
+            @if (Model._detectedLanguage.Value.ConfidenceScore > 0.9)
+            {
+                <strong>I am quite sure this is: @Model._detectedLanguage.Value.Name</strong>
+            }
+            else if (Model._detectedLanguage.Value.ConfidenceScore == 0)
+            {
+                <strong>I have no clue - type in some more text.</strong>
+            }
+            else if (Model._detectedLanguage.Value.ConfidenceScore < 0.3)
+            {
+                <strong>Here is a wild guess: @Model._detectedLanguage.Value.Name</strong>
+            }
+            else
+            {
+                <strong>I could be wrong, but it sounds a bit like: @Model._detectedLanguage.Value.Name</strong>
+            }
+        </div>
+        <br />
+        <span style="color: white">Raw: </span>
+    }
+</body>
+</html>
