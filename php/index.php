@@ -1,4 +1,16 @@
 <?php
+
+$cs_key = getenv('CS_ACCOUNT_KEY');
+$cs_name = getenv('CS_ACCOUNT_NAME');
+
+if (substr($cs_key, 0, 20) === '@Microsoft.KeyVault(' or substr($cs_name, 0, 20) === '@Microsoft.KeyVault(')
+{
+    // Key Vault reference failed to resolve.
+        header('HTTP/1.1 500 Internal Server Error');
+        echo '<h1>HTTP/1.1 500: Error resolving Key Vault references!</h1>';
+        exit;
+}
+
 if (!empty($_GET['text'])) {
     $text = urldecode($_GET['text']);
     $payload = [
@@ -8,8 +20,6 @@ if (!empty($_GET['text'])) {
         ])
     ];
     $json_payload = json_encode($payload);
-    $cs_key = getenv('CS_ACCOUNT_KEY');
-    $cs_name = getenv('CS_ACCOUNT_NAME');
 
     $options = array(
         'http'=>array(
@@ -26,6 +36,12 @@ if (!empty($_GET['text'])) {
     $context = stream_context_create($options);
     $cs_text_api_url = 'https://' . $cs_name . '.cognitiveservices.azure.com/text/analytics/v3.0/languages';
     $detection_result = file_get_contents($cs_text_api_url, false, $context);
+
+    if ($detection_result === false) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo '<h1>HTTP/1.1 500: Error accessing the Cognitive Services endpoint!</h1>';
+        exit;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -33,8 +49,6 @@ if (!empty($_GET['text'])) {
 <head>
     <meta charset="utf-8"/>
     <title>Language detector</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="script.js"></script>
 </head>
 <body>
 <h3>Language detector</h3>
