@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Text.Json;
 @model IndexModel
 @{
     Layout = null;
@@ -39,7 +40,7 @@
             }
         </div>
         <br />
-        <span style="color: white">Raw: </span>
+        <span style="color: white">Raw: @JsonSerializer.Serialize(Model._detectedLanguage.Value)</span>
     }
 </body>
 </html>
