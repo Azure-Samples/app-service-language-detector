@@ -10,6 +10,7 @@ namespace LanguageDetectorApp.Pages
     public class IndexModel : PageModel
     {
         public DetectedLanguage? _detectedLanguage;
+        public string formText = "";
         private readonly AzureKeyCredential _credentials;
         private readonly Uri _endpoint;
 
@@ -24,7 +25,7 @@ namespace LanguageDetectorApp.Pages
 
         public void OnPost()
         {
-            var text = Request.Form["text"];
+            formText = Request.Form["text"];
             var client = new TextAnalyticsClient(_endpoint, _credentials);
 
             _detectedLanguage = client.DetectLanguage(text);
