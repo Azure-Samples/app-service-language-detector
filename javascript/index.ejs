@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Language detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <h3>Language detector</h3>
+    <form action="/" method="get">
+        <input type="text" name="text" value="<%= text %>""/>
+        <button type="submit">Detect</button>
+    </form>
+    <br/>
+    <div>
+      <% if (language) { %>
+
+      <div>Detected <%= language %> </div>
+      <div>Score <%= score %></div>
+      <div>Score means <%= scoreText %></div>
+      <div>Text `<%= text %>`</div>      
+      <% } %>
+
+    </div>
+
+        
+
+</body>
+</html>
