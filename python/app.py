@@ -36,7 +36,7 @@ def index():
             score_text = "very confident"
         elif 0.3 < confidence_score < 0.9:
             score_text = "somewhat confident - need more text in this language"
-        elif 0 > -confidence_score < 0.3:
+        elif 0 > confidence_score < 0.3:
             score_text = "not confident"
         elif confidence_score == 0:
             score_text = "no confidence"
