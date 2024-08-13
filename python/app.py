@@ -1,12 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 import os
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import ClientAuthenticationError, ServiceRequestError
+
 
 app = Flask(__name__)
 
 def create_text_analytics_client():
-    key = os.getenv('CS_ACCOUNT_KEY')
+    # Set a default key if missing to avoid TypeError on use
+    key = os.getenv('CS_ACCOUNT_KEY', '')
     endpoint = f"https://{os.getenv('CS_ACCOUNT_NAME')}.cognitiveservices.azure.com/"
     return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
 
@@ -14,10 +17,17 @@ def language_detection(text):
     if not text:
         return {}
 
-    client = create_text_analytics_client()
-    response = client.detect_language(documents=[text])
-    if response and response[0].primary_language:
-        return response[0]
+    try:        
+        client = create_text_analytics_client()
+        response = client.detect_language(documents=[text])
+        if response and response[0].primary_language:
+            return response[0]
+    except ClientAuthenticationError as e:
+        # CS_ACCOUNT_NAME environmnet variable missing or CS_ACCOUNT_KEY is invalid
+        abort(401, description=e.message)
+    except ServiceRequestError as e:
+        # CS_ACCOUNT_NAME doesn't exist in Azure
+        abort(404, description=e.message)
 
     return {}
 
@@ -44,6 +54,7 @@ def index():
         return render_template('index.html', language=language, score=confidence_score, scoreText=score_text, text=text, error=None, cs_result=str(result))
     
     return render_template('index.html', text="", language=None, error="Error processing your request")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
