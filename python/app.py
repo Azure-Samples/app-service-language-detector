@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request
 import os
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
-import traceback
+from werkzeug.exceptions import HTTPException
+
 
 
 app = Flask(__name__)
@@ -26,34 +27,37 @@ def language_detection(text):
 
 @app.route('/')
 def index():
-    try: 
-        text = request.args.get('text', '')
-        if not text:
-            return render_template('index.html', text="", language=None, error=None)
+ 
+    text = request.args.get('text', '')
+    if not text:
+        return render_template('index.html', text="", language=None, error=None)
 
-        result = language_detection(text)
-        if result:
-            language = result.primary_language.name
-            confidence_score = result.primary_language.confidence_score
-            score_text = "--"
-            if confidence_score > 0.9:
-                score_text = "very confident"
-            elif 0.3 < confidence_score < 0.9:
-                score_text = "somewhat confident - need more text in this language"
-            elif 0 > confidence_score < 0.3:
-                score_text = "not confident"
-            elif confidence_score == 0:
-                score_text = "no confidence"
+    result = language_detection(text)
+    if result:
+        language = result.primary_language.name
+        confidence_score = result.primary_language.confidence_score
+        score_text = "--"
+        if confidence_score > 0.9:
+            score_text = "very confident"
+        elif 0.3 < confidence_score < 0.9:
+            score_text = "somewhat confident - need more text in this language"
+        elif 0 > confidence_score < 0.3:
+            score_text = "not confident"
+        elif confidence_score == 0:
+            score_text = "no confidence"
 
-            return render_template('index.html', language=language, score=confidence_score, scoreText=score_text, text=text, error=None, cs_result=str(result))
-        
-        return render_template('index.html', text="", language=None, error="Error processing your request")
-    except Exception as e:
-        error_type = str(type(e))
-        error_message = str(e)
-        error_stack = traceback.format_exc()
-        return render_template('error.html', message=error_message, error_type=error_type, error_stack=error_stack)
+        return render_template('index.html', language=language, score=confidence_score, scoreText=score_text, text=text, error=None, cs_result=str(result))
+    
+    return render_template('index.html', text="", language=None, error="Error processing your request")
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+    # Handle non-HTTP exceptions
+    return render_template("error.html", error_type=str(type(e))), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

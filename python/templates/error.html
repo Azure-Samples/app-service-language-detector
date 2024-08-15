@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
+    <title>500 Error</title>
 </head>
 <body>
-    <h1>Error: {{ error_type }}</h1>
-    {{ message }}
-    <h2>Error Details</h2>
-    <pre>{{ error_stack }}</pre>
-    <hr>
+    <h1>Internal Server Error</h1>
+    The server encountered an internal error and was unable to complete your request. There was an application error of type: {{ error_type }}. Check the diagnostic logs for details and a stack trace.
 </body>
 </html>
