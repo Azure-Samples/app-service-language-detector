@@ -28,7 +28,7 @@ def index():
  
     text = request.args.get('text', '')
     if not text:
-        return render_template('index.html', text="", language=None, error=None)
+        return render_template('index.html')
 
     result = language_detection(text)
     if result:
