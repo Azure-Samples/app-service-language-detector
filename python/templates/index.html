@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Language detector</title>
+  <meta charset="UTF-8">
+  <link rel='stylesheet' href='/static/stylesheets/style.css' />
+</head>
+<body>
+  <h1>Language detector</h1>
+  <form action="/" method="get">
+    <input type="text" name="text" aria-label= "Enter text" value="{{ text }}"/>
+    <button type="submit">Detect</button>
+  </form>
+  <br />
+  {% if error %}
+    <div>Error: {{ error }}</div>
+  {% endif %}
+  <br />
+  <div>
+    {% if language %}
+      <div>Detected {{ language }}</div>
+      <div>Score <b>{{ score }}</b> means <b>{{ score_text }}</b></div>
+      <div>Text `{{ text }}`</div>
+    {% endif %}
+  </div>
+  <hr>
+  {% if cs_result %}
+    <div style="color: white"> {{ cs_result }}</div>
+  {% endif %}
+</body>
+</html>
